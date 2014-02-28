@@ -16,7 +16,7 @@ class ThreadsafeQueue
     }
 
   private:
-    typedef std::unique_lock<std::mutex> Lock;
+    typedef std::lock_guard<std::mutex> Lock;
     std::queue<Task> mQueue;
     std::mutex mQueueMutex;
 };

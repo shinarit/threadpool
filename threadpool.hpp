@@ -16,6 +16,8 @@ class ThreadPool
     void executeTask(Task task);
 
     struct ThreadController;
+
   private:
     std::vector<ThreadController> mThreadControls;
+    ThreadsafeQueue mTaskQueue;
 };

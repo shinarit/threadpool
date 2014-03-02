@@ -51,18 +51,14 @@ int main()
   Task f3 = std::bind(&X::alma, &x);
   Task f4 = std::bind(&X::korte, &x, 2);
 
-  ThreadPool tp(5);
-  tp.executeTask(f1);
-  tp.executeTask(f2);
-  tp.executeTask(f3);
-  tp.executeTask(f4);
-  
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-  tp.executeTask(f4);
-  tp.executeTask(f3);
-  tp.executeTask(f2);
-  tp.executeTask(f1);
+  ThreadPool tp(2);
+  for (int i(0); i<10; ++i)
+  {
+    tp.executeTask(f1);
+    tp.executeTask(f2);
+    tp.executeTask(f3);
+    tp.executeTask(f4);
+  }
   
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 

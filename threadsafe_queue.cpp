@@ -1,17 +1,32 @@
 #include "threadsafe_queue.hpp"
 
-void ThreadsafeQueue::push(const Task& task)
+void ThreadsafeQueue::push(const Task& task, bool lock)
 {
-  Lock lock(mQueueMutex);
+  if (lock)
+  {
+    mQueueMutex.lock();
+  }
 
   mQueue.push(task);
+
+  if (lock)
+  {
+    mQueueMutex.unlock();
+  }
 }
 
-ThreadsafeQueue::Task ThreadsafeQueue::pop()
+ThreadsafeQueue::Task ThreadsafeQueue::pop(bool lock)
 {
-  Lock lock(mQueueMutex);
+  if (lock)
+  {
+    mQueueMutex.lock();
+  }
 
   Task task(mQueue.front());
   mQueue.pop();
+  if (lock)
+  {
+    mQueueMutex.unlock();
+  }
   return task;
 }

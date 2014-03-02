@@ -8,11 +8,19 @@ class ThreadsafeQueue
   public:
     typedef std::function<void()> Task;
 
-    void push(const Task&);
-    Task pop();
+    void push(const Task&, bool lock = true);
+    Task pop(bool lock = true);
     bool empty() const
     {
       return mQueue.empty();
+    }
+    void lock()
+    {
+      mQueueMutex.lock();
+    }
+    void unlock()
+    {
+      mQueueMutex.unlock();
     }
 
   private:

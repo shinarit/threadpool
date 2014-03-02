@@ -19,6 +19,22 @@ struct ThreadPool::ThreadController
 {
   ThreadController(): toRun(nop), myThread(std::bind(executer, this))
   { }
+  void setNextTask()
+  {
+    ThreadsafeQueue& queue(mPool->mTaskQueue);
+    queue.lock();
+    if (queue.empty())
+    {
+      runningTask = false;
+    }
+    else
+    {
+      Task task(queue.pop(false));
+      toRun = task;
+      runMutex.unlock();
+    }
+    queue.unlock();
+  }
 
   typedef LockedMutex Mutex;
   Mutex runMutex;
@@ -26,6 +42,7 @@ struct ThreadPool::ThreadController
   std::thread myThread;
   bool exit = false;
   bool runningTask = false;
+  ThreadPool* mPool;
 };
 
 void executer(ThreadPool::ThreadController* threadController)
@@ -38,13 +55,18 @@ void executer(ThreadPool::ThreadController* threadController)
     {
       tc.toRun();
     }
-    tc.runningTask = false;
+    tc.setNextTask();
   }
 }
 
 
 ThreadPool::ThreadPool(int numOfThreads): mThreadControls(numOfThreads)
-{ }
+{
+  for (auto& tc: mThreadControls)
+  {
+    tc.mPool = this;
+  }
+}
 
 ThreadPool::~ThreadPool()
 {
@@ -62,6 +84,7 @@ ThreadPool::~ThreadPool()
 
 void ThreadPool::executeTask(Task task)
 {
+  mTaskQueue.lock();
   auto it = std::find_if(mThreadControls.begin(), mThreadControls.end(), [](const ThreadController& tc) { return !tc.runningTask; } );
   if (it != mThreadControls.end())
   {
@@ -70,4 +93,9 @@ void ThreadPool::executeTask(Task task)
     tc.runningTask = true;
     tc.runMutex.unlock();
   }
+  else
+  {
+    mTaskQueue.push(task, false);
+  }
+  mTaskQueue.unlock();
 }

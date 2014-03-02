@@ -3,10 +3,12 @@
 #include <vector>
 #include <functional>
 
+#include "threadsafe_queue.hpp"
+
 class ThreadPool
 {
   public:
-    typedef std::function<void()> Task;
+    typedef ThreadsafeQueue::Task Task;
     
     ThreadPool(int numOfThreads);
     ~ThreadPool();

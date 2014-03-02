@@ -45,10 +45,11 @@ struct X
 int main()
 {
   X x{10};
-  std::function<void()> f1 = std::bind(alma);
-  std::function<void()> f2 = std::bind(korte, 2);
-  std::function<void()> f3 = std::bind(&X::alma, &x);
-  std::function<void()> f4 = std::bind(&X::korte, &x, 2);
+  typedef ThreadPool::Task Task;
+  Task f1 = std::bind(alma);
+  Task f2 = std::bind(korte, 2);
+  Task f3 = std::bind(&X::alma, &x);
+  Task f4 = std::bind(&X::korte, &x, 2);
 
   ThreadPool tp(5);
   tp.executeTask(f1);

@@ -44,12 +44,7 @@ void executer(ThreadPool::ThreadController* threadController)
 
 
 ThreadPool::ThreadPool(int numOfThreads): mThreadControls(numOfThreads)
-{
-  for (auto& tc: mThreadControls)
-  {
-//    tc.runMutex.lock();
-  }  
-}
+{ }
 
 ThreadPool::~ThreadPool()
 {

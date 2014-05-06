@@ -14,10 +14,12 @@ class ThreadPool
     ~ThreadPool();
     
     void executeTask(Task task);
+    bool hasFreeThreads() const;
 
     struct ThreadController;
 
   private:
     std::vector<ThreadController> mThreadControls;
+    int mThreadsRunning;
     ThreadsafeQueue mTaskQueue;
 };

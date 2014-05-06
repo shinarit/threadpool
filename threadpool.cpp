@@ -25,6 +25,7 @@ struct ThreadPool::ThreadController
     queue.lock();
     if (queue.empty())
     {
+      --mPool->mThreadsRunning;
       runningTask = false;
     }
     else
@@ -60,7 +61,7 @@ void executer(ThreadPool::ThreadController* threadController)
 }
 
 
-ThreadPool::ThreadPool(int numOfThreads): mThreadControls(numOfThreads)
+ThreadPool::ThreadPool(int numOfThreads): mThreadControls(numOfThreads), mThreadsRunning(0)
 {
   for (auto& tc: mThreadControls)
   {
@@ -88,6 +89,7 @@ void ThreadPool::executeTask(Task task)
   auto it = std::find_if(mThreadControls.begin(), mThreadControls.end(), [](const ThreadController& tc) { return !tc.runningTask; } );
   if (it != mThreadControls.end())
   {
+    ++mThreadsRunning;
     ThreadController& tc(*it);
     tc.toRun = task;
     tc.runningTask = true;
@@ -98,4 +100,9 @@ void ThreadPool::executeTask(Task task)
     mTaskQueue.push(task, false);
   }
   mTaskQueue.unlock();
+}
+
+bool ThreadPool::hasFreeThreads() const
+{
+  return mThreadsRunning < mThreadControls.size();
 }

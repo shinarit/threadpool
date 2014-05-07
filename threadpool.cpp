@@ -106,3 +106,8 @@ bool ThreadPool::hasFreeThreads() const
 {
   return mThreadsRunning < mThreadControls.size();
 }
+
+unsigned ThreadPool::threadNumberSuggestion()
+{
+  return (std::thread::hardware_concurrency() > 0) ? std::thread::hardware_concurrency : 4;
+}

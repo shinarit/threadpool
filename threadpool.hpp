@@ -17,6 +17,8 @@ class ThreadPool
     bool hasFreeThreads() const;
 
     struct ThreadController;
+    
+    static unsigned threadNumberSuggestion();
 
   private:
     std::vector<ThreadController> mThreadControls;

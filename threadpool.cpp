@@ -109,5 +109,5 @@ bool ThreadPool::hasFreeThreads() const
 
 unsigned ThreadPool::threadNumberSuggestion()
 {
-  return (std::thread::hardware_concurrency() > 0) ? std::thread::hardware_concurrency : 4;
+  return (std::thread::hardware_concurrency() > 0) ? std::thread::hardware_concurrency() : 4;
 }
